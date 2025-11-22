@@ -1,0 +1,22 @@
+displayName: Fail2Ban
+type: middleware
+iconPath: .assets/f2b.png
+
+import: github.com/MaxGridasoff/fail2ban
+
+summary: "Fail2ban for Traefik"
+
+testData:
+  allowlist:
+    # allow requests from ::1 or 127.0.0.1
+    ip: "::1,127.0.0.1"
+  denylist:
+    # do not allow requests from 192.168.0.0/24
+    ip: "192.168.0.0/24"
+  rules:
+    # forbid users to make more than 4 requests per 10m
+    bantime: "3h"
+    findtime: "10m"
+    maxretry: 4
+    enabled: true
+    statuscode: "400,401,403-499"
