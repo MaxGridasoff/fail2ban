@@ -484,3 +484,5 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 	software.sslmate.com/src/go-pkcs12 v0.5.0 // indirect
 )
+
+replace github.com/MaxGridasoff/fail2ban => ../

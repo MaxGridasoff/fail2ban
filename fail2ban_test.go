@@ -11,9 +11,9 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/MaxGridasoff/fail2ban/pkg/rules"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/MaxGridasoff/fail2ban/pkg/rules"
 	"golang.org/x/net/websocket"
 )
 

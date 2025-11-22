@@ -1,0 +1,25 @@
+name: Main
+
+on:
+  push:
+  pull_request:
+
+jobs:
+
+  main:
+    name: Main Process
+    runs-on: ubuntu-latest
+
+    steps:
+      # https://github.com/marketplace/actions/checkout
+      - uses: actions/checkout@v5
+
+      # https://github.com/marketplace/actions/setup-go-environment
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Lint and Tests
+        run: |
+          make ci
+          git diff --exit-code
