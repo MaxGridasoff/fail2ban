@@ -33,9 +33,11 @@ type List struct {
 
 // Config struct.
 type Config struct {
-	Denylist  List        `yaml:"denylist"`
-	Allowlist List        `yaml:"allowlist"`
-	Rules     rules.Rules `yaml:"port"`
+	Denylist  List   `yaml:"denylist"`
+	Allowlist List   `yaml:"allowlist"`
+	Header    string `yaml:"header"`
+
+	Rules rules.Rules `yaml:"port"`
 
 	// deprecated
 	Blacklist List `yaml:"blacklist"`
@@ -84,7 +86,9 @@ func New(_ context.Context, next http.Handler, config *Config, _ string) (http.H
 		return next, nil
 	}
 
+	fmt.Printf("allow list: %+v", config.Allowlist)
 	allowIPs, err := ImportIP(config.Allowlist)
+
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse allowlist IPs: %w", err)
 	}
@@ -142,6 +146,7 @@ func New(_ context.Context, next http.Handler, config *Config, _ string) (http.H
 
 	c := chain.New(
 		next,
+		strings.TrimSpace(config.Header),
 		denyHandler,
 		allowHandler,
 		uDeny.New(rules.URLRegexpBan, f2b),

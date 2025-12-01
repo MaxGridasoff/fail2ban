@@ -6,10 +6,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/MaxGridasoff/fail2ban/pkg/data"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/MaxGridasoff/fail2ban/pkg/data"
 )
+
+const ComparableIP = "192.0.2.1"
 
 type mockHandler struct {
 	called         int
@@ -50,6 +52,7 @@ func TestChain(t *testing.T) {
 	tests := []struct {
 		name             string
 		finalHandler     *mockHandler
+		Header           string
 		handlers         []ChainHandler
 		expectedStatus   *Status
 		expectFinalCount int
@@ -57,6 +60,7 @@ func TestChain(t *testing.T) {
 		{
 			name:         "return",
 			finalHandler: &mockHandler{expectedCalled: 0},
+			Header:       "X-Real-Ip",
 			handlers: []ChainHandler{&mockChainHandler{
 				status:      &Status{Return: true},
 				mockHandler: mockHandler{expectedCalled: 1},
@@ -68,6 +72,7 @@ func TestChain(t *testing.T) {
 		{
 			name:         "break",
 			finalHandler: &mockHandler{expectedCalled: 1},
+			Header:       "",
 			handlers: []ChainHandler{&mockChainHandler{
 				status:      &Status{Break: true},
 				mockHandler: mockHandler{expectedCalled: 1},
@@ -79,6 +84,7 @@ func TestChain(t *testing.T) {
 		{
 			name:         "nil",
 			finalHandler: &mockHandler{expectedCalled: 1},
+			Header:       "",
 			handlers: []ChainHandler{&mockChainHandler{
 				status:      nil,
 				mockHandler: mockHandler{expectedCalled: 1},
@@ -87,6 +93,7 @@ func TestChain(t *testing.T) {
 		{
 			name:         "error",
 			finalHandler: &mockHandler{expectedCalled: 1},
+			Header:       "",
 			handlers: []ChainHandler{&mockChainHandler{
 				mockHandler: mockHandler{
 					err:            errors.New("error"),
@@ -100,10 +107,15 @@ func TestChain(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 
-			c := New(test.finalHandler, test.handlers...)
+			c := New(test.finalHandler, test.Header, test.handlers...)
 			recorder := &httptest.ResponseRecorder{}
 			req := httptest.NewRequest(http.MethodGet, "https://example.com/foo", nil)
-			req, err := data.ServeHTTP(recorder, req)
+
+			if len(test.Header) > 0 {
+				req.Header.Set("X-Real-Ip", ComparableIP)
+			}
+
+			req, err := data.ServeHTTP(test.Header, recorder, req)
 			require.NoError(t, err)
 
 			c.ServeHTTP(recorder, req)
@@ -142,7 +154,7 @@ func TestChainOrder(t *testing.T) {
 		expectedCalled: 1,
 	}
 
-	ch := New(final, a, b, c)
+	ch := New(final, "", a, b, c)
 	r := httptest.NewRequest(http.MethodGet, "https://example.com/foo", nil)
 	ch.ServeHTTP(nil, r)
 
@@ -169,14 +181,14 @@ func TestChainRequestContext(t *testing.T) {
 
 	handler := &mockDataHandler{
 		t:          t,
-		ExpectData: &data.Data{RemoteIP: "192.0.2.1"},
+		ExpectData: &data.Data{RemoteIP: ComparableIP},
 	}
 
 	final := &mockHandler{
 		expectedCalled: 1,
 	}
 
-	ch := New(final, handler)
+	ch := New(final, "", handler)
 	r := httptest.NewRequest(http.MethodGet, "https://example.com/foo", nil)
 	ch.ServeHTTP(nil, r)
 
@@ -192,7 +204,7 @@ func TestChainWithStatus(t *testing.T) {
 	final := &mockHandler{expectedCalled: 0}
 	status := &mockHandler{expectedCalled: 1}
 
-	ch := New(final, handler)
+	ch := New(final, "", handler)
 	ch.WithStatus(status)
 
 	r := httptest.NewRequest(http.MethodGet, "https://example.com/foo", nil)

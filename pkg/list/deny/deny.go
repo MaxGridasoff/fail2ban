@@ -33,12 +33,12 @@ func (d *deny) ServeHTTP(w http.ResponseWriter, r *http.Request) (*chain.Status,
 	fmt.Printf("data: %+v", data)
 
 	if d.list.Contains(data.RemoteIP) {
-		fmt.Printf("IP %s is denied", data.RemoteIP)
+		fmt.Printf("IP %s is denied !!", data.RemoteIP)
 
 		return &chain.Status{Return: true}, nil
 	}
 
-	fmt.Printf("IP %s not is denied", data.RemoteIP)
+	fmt.Printf("IP %s not is denied !!!", data.RemoteIP)
 
 	return nil, nil
 }

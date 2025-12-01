@@ -4,10 +4,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/MaxGridasoff/fail2ban/pkg/ipchecking"
 	"github.com/MaxGridasoff/fail2ban/pkg/rules"
 	utime "github.com/MaxGridasoff/fail2ban/pkg/utils/time"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestShouldAllow(t *testing.T) {

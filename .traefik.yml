@@ -1,12 +1,13 @@
-displayName: Fail2Ban
+displayName: Fail2Ban enhancement
 type: middleware
 iconPath: .assets/f2b.png
 
 import: github.com/MaxGridasoff/fail2ban
 
-summary: "Fail2ban for Traefik"
+summary: "Extended Fail2ban plugin with configurable HTTP headers for ban evaluation."
 
 testData:
+  header: "CF-Connecting-IP"
   allowlist:
     # allow requests from ::1 or 127.0.0.1
     ip: "::1,127.0.0.1"

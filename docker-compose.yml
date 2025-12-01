@@ -7,8 +7,6 @@ services:
       - --log.level=DEBUG
       - --accesslog
       - --experimental.localPlugins.fail2ban-local.moduleName=github.com/MaxGridasoff/fail2ban
-      - --experimental.plugins.fail2ban-registery.modulename=github.com/MaxGridasoff/fail2ban
-      - --experimental.plugins.fail2ban-registery.version=v0.8.7
     ports:
       - 80:80
       - 8080:8080
@@ -18,6 +16,8 @@ services:
     tty: true
 
   whoami:
+    depends_on:
+      - traefik
     image: traefik/whoami # https://github.com/traefik/whoami
     command: >-
       -name whoami -verbose true
@@ -28,14 +28,15 @@ services:
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.bantime: 3h
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.findtime: 3h
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.maxretry: 4
-      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.allowlist.ip: 127.0.0.2
-      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.denylist.ip: 127.0.0.3
+      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.allowlist.ipheader: "X-Real-Ip"
+      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.allowlist.ip[0]: 127.0.0.2
+      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.allowlist.ip[1]: 192.168.0.35
+      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.denylist.ip[0]: 127.0.0.1
+      traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.denylist.ip[1]: 172.21.0.1
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.urlregexps[0].regexp: /no
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.urlregexps[0].mode: block
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.urlregexps[1].regexp: /yes
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.urlregexps[1].mode: allow
       traefik.http.middlewares.fail2ban-local.plugin.fail2ban-local.rules.statuscode: "400,401,403-499"
 
-      traefik.http.routers.fail2ban-registery.rule: Host(`fail2ban-registery.localhost`)
-      traefik.http.routers.fail2ban-registery.middlewares: fail2ban-registery
       traefik.http.middlewares.fail2ban-registery.plugin.fail2ban-registery.enabled: true

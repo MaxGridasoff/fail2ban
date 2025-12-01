@@ -11,7 +11,8 @@ linters:
     - nilnil # Not relevant
     - testpackage # Too strict
     - cyclop # duplicate of gocyclo
-    - exportloopref # deprecated
+    - tenv
+    - gofumpt
 
 linters-settings:
   misspell:
@@ -68,24 +69,24 @@ issues:
   max-issues-per-linter: 0
   max-same-issues: 0
   exclude-rules:
-    - path: '(.+)_test.go'
+    - path: "(.+)_test.go"
       linters:
         - funlen
-    - path: 'fail2ban.go'
-      text: 'calculated cyclomatic complexity for function New is 13'
+    - path: "fail2ban.go"
+      text: "calculated cyclomatic complexity for function New is 13"
       linters:
         - cyclop
-    - path: 'fail2ban.go'
-      text: 'G304: Potential file inclusion via variable'
+    - path: "fail2ban.go"
+      text: "G304: Potential file inclusion via variable"
       linters:
         - gosec
-    - text: 'use of `fmt.Printf` forbidden' # FIXME: add revert this change ASAP
+    - text: "use of `fmt.Printf` forbidden" # FIXME: add revert this change ASAP
       linters:
         - forbidigo
-    - text: 'use of `fmt.Print` forbidden' # FIXME: add revert this change ASAP
+    - text: "use of `fmt.Print` forbidden" # FIXME: add revert this change ASAP
       linters:
         - forbidigo
-    - text: 'use of `fmt.Println` forbidden' # FIXME: add revert this change ASAP
+    - text: "use of `fmt.Println` forbidden" # FIXME: add revert this change ASAP
       linters:
         - forbidigo
 
