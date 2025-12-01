@@ -4,7 +4,7 @@ iconPath: .assets/f2b.png
 
 import: github.com/MaxGridasoff/fail2ban
 
-summary: "Extended Fail2ban plugin with configurable HTTP headers for ban evaluation."
+summary: "Extended Fail2ban plugin with configurable HTTP headers for IP ban's evaluation."
 
 testData:
   header: "CF-Connecting-IP"
