@@ -6,10 +6,10 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/MaxGridasoff/fail2ban/pkg/chain"
 	"github.com/MaxGridasoff/fail2ban/pkg/data"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAllow(t *testing.T) {
@@ -40,7 +40,7 @@ func TestAllow(t *testing.T) {
 
 			recorder := &httptest.ResponseRecorder{}
 			req := httptest.NewRequest(http.MethodGet, "https://example.com/foo", nil)
-			req, err := data.ServeHTTP(recorder, req)
+			req, err := data.ServeHTTP("", recorder, req)
 			require.NoError(t, err)
 
 			got, err := a.ServeHTTP(recorder, req)
