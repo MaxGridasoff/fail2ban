@@ -1,9 +1,9 @@
-# Fail2ban plugin for traefik
+# Extended Fail2ban plugin with configurable HTTP headers for IP ban's evaluation.
 
 [![Build Status](https://github.com/tomMoulard/fail2ban/actions/workflows/main.yml/badge.svg)](https://github.com/tomMoulard/fail2ban/actions/workflows/main.yml)
 
 This plugin is an implementation of a Fail2ban instance as a middleware
-plugin for Traefik.
+plugin for Traefik with enhancement of configuration to able work not only with a `RemoteAddr` but also with a custom header.
 
 ## Middleware
 
@@ -59,6 +59,7 @@ You can allowlist some IP using this:
 
 ```yml
 testData:
+  header: "CF-Connecting-IP"
   allowlist:
     files:
       - "tests/test-ipfile.txt"
@@ -78,6 +79,7 @@ Like allowlist, you can denylist some IP using this:
 
 ```yml
 testData:
+  header: "CF-Connecting-IP"
   denylist:
     files:
       - "tests/test-ipfile.txt"
@@ -99,6 +101,7 @@ few features are implemented:
 
 ```yml
 testData:
+  header: "CF-Connecting-IP"
   rules:
     urlregexps:
       - regexp: "/no"
@@ -147,6 +150,7 @@ By default, fail2ban will be applied.
 
 ```yml
 testData:
+  header: "CF-Connecting-IP"
   rules:
     urlregexps:
       - regexp: "/whoami"
@@ -251,7 +255,7 @@ B          |--x---------->
 $ docker compose up
 ```
 
-# Authors
+# Authors of original fail2ban traefik plugin
 
 | Tom Moulard                                                                                                     | Clément David                                                                                                         | Martin Huvelle                                                                                                          | Alexandre Bossut-Lasry                                                                                                                                 |
 | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
