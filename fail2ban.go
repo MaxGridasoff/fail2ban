@@ -120,8 +120,8 @@ func New(_ context.Context, next http.Handler, config *Config, _ string) (http.H
 	c := chain.New(
 		next,
 		strings.TrimSpace(config.Header),
-		denyHandler,
 		allowHandler,
+		denyHandler,
 		uDeny.New(rules.URLRegexpBan, f2b),
 		uAllow.New(rules.URLRegexpAllow),
 		f2bHandler.New(f2b),
