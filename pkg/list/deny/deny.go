@@ -13,15 +13,27 @@ import (
 
 type deny struct {
 	list ipchecking.NetIPs
+	all  bool
 }
 
 func New(ipList []string) (*deny, error) {
-	list, err := ipchecking.ParseNetIPs(ipList)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create new net ips: %w", err)
+	var err error
+
+	all := false
+	list := make(ipchecking.NetIPs, 0)
+
+	if len(ipList) == 1 && ipList[0] == "*" {
+		all = true
+
+		fmt.Println("FUX")
+	} else {
+		list, err = ipchecking.ParseNetIPs(ipList)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create new net ips: %w", err)
+		}
 	}
 
-	return &deny{list: list}, nil
+	return &deny{list: list, all: all}, nil
 }
 
 func (d *deny) ServeHTTP(w http.ResponseWriter, r *http.Request) (*chain.Status, error) {
@@ -31,6 +43,12 @@ func (d *deny) ServeHTTP(w http.ResponseWriter, r *http.Request) (*chain.Status,
 	}
 
 	fmt.Printf("data: %+v", data)
+
+	if d.all {
+		fmt.Printf("IP %s is denied !!", data.RemoteIP)
+
+		return &chain.Status{Return: true}, nil
+	}
 
 	if d.list.Contains(data.RemoteIP) {
 		fmt.Printf("IP %s is denied !!", data.RemoteIP)
