@@ -38,11 +38,6 @@ type Config struct {
 	Header    string `yaml:"header"`
 
 	Rules rules.Rules `yaml:"port"`
-
-	// deprecated
-	Blacklist List `yaml:"blacklist"`
-	// deprecated
-	Whitelist List `yaml:"whitelist"`
 }
 
 // CreateConfig populates the Config data object.
@@ -93,17 +88,6 @@ func New(_ context.Context, next http.Handler, config *Config, _ string) (http.H
 		return nil, fmt.Errorf("failed to parse allowlist IPs: %w", err)
 	}
 
-	if len(config.Whitelist.IP) > 0 || len(config.Whitelist.Files) > 0 {
-		log.Println("Plugin: FailToBan: 'whitelist' is deprecated, please use 'denylist' instead")
-
-		whiteips, err := ImportIP(config.Whitelist)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse whitelist IPs: %w", err)
-		}
-
-		allowIPs = append(allowIPs, whiteips...)
-	}
-
 	allowNetIPs, err := ipchecking.ParseNetIPs(allowIPs)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse allowlist IPs: %w", err)
@@ -117,17 +101,6 @@ func New(_ context.Context, next http.Handler, config *Config, _ string) (http.H
 	denyIPs, err := ImportIP(config.Denylist)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse denylist IPs: %w", err)
-	}
-
-	if len(config.Blacklist.IP) > 0 || len(config.Blacklist.Files) > 0 {
-		log.Println("Plugin: FailToBan: 'blacklist' is deprecated, please use 'denylist' instead")
-
-		blackips, err := ImportIP(config.Blacklist)
-		if err != nil {
-			return nil, fmt.Errorf("failed to parse blacklist IPs: %w", err)
-		}
-
-		denyIPs = append(denyIPs, blackips...)
 	}
 
 	denyHandler, err := lDeny.New(denyIPs)

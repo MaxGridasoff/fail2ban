@@ -27,6 +27,13 @@ func TestDeny(t *testing.T) {
 			},
 		},
 		{
+			name:   "denied all",
+			ipList: []string{"*"},
+			expectedStatus: &chain.Status{
+				Return: true,
+			},
+		},
+		{
 			name: "not denied",
 		},
 	}
